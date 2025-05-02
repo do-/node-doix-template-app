@@ -1,10 +1,9 @@
 const cluster     = require ('node:cluster')
 const process     = require ('node:process')
+
 const conf        = require ('./lib/Conf')
 const logger      = require ('./lib/Logger.js') (conf)
-const Application = require ('./lib/Application.js')
-
-let app; 
+const app         = new (require ('./lib/Application.js')) (conf, logger)
 
 function exit () {
 
@@ -23,15 +22,13 @@ function exit () {
 
 async function startWorkers () {
 
-    cluster.on ('message', (w, o) => {if ('message' in o && 'level' in o) logger.log (o)})
-
-    let N = require ('node:os').availableParallelism (); if (N > 1) N --
+    cluster.on ('message', (w, o) => {if ('level' in o) logger.log (o)})
 
     return new Promise (ok => {
 
         let online = 0, onOnline = () => {
 
-            if ((++ online < N)) return
+            if ((++ online < conf.workers)) return
 
             cluster.off ('online', onOnline)
 
@@ -41,7 +38,7 @@ async function startWorkers () {
 
         cluster.on ('online', onOnline)
 
-        for (let i = 0; i < N; i ++) cluster.fork ()
+        for (let i = 0; i < conf.workers; i ++) cluster.fork ()
 
     })
 
@@ -49,13 +46,11 @@ async function startWorkers () {
 
 async function main () {    
     
-    app = new Application (conf, logger)
-
     if (cluster.isPrimary) {
 
         for (const signal of ['SIGTERM', 'SIGINT', 'SIGBREAK']) process.on (signal, exit)
 
-        if (!conf.noCluster) await startWorkers ()
+        if (conf.workers > 0) await startWorkers ()
 
         await app.do ('init')
 
@@ -67,7 +62,7 @@ async function main () {
         process.on ('message', request => app.process (request))
     
     }
-    
+
 }
 
 main ().then (_=>_ , _ => console.log (_))
