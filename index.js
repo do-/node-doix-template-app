@@ -28,4 +28,4 @@ async function main () {
     app.start ()
 }
 
-main ().then (_=>_ , _=>_)
+main ().then (_=>_ , _ => console.log (_))

@@ -29,6 +29,8 @@ async function main () {
 
         for (const signal of ['SIGTERM', 'SIGINT', 'SIGBREAK']) process.on (signal, exit)
 
+        cluster.on ('message', (w, o) => {if ('message' in o && 'level' in o) logger.log (o)})
+
         let N = require ('node:os').availableParallelism (); if (N > 1) N --
 
         await new Promise (ok => {
