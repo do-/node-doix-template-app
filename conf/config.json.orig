@@ -1,3 +1,4 @@
 {
+        "workers": 0,
         "logs": "/projects/npm/doix/doix-template-app/logs"
 }
