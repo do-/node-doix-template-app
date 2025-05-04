@@ -8,7 +8,7 @@
   },
   "author": "",
   "peerDependencies": {
-    "doix": "^1.0.52"
+    "doix": "^1.0.53"
   },
   "license": "MIT"
 }
