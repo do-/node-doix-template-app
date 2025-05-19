@@ -8,6 +8,7 @@
   },
   "author": "",
   "peerDependencies": {
+    "cluster-to-winston": "^1.0.0",
     "doix": "^1.0.55"
   },
   "license": "MIT"

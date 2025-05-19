@@ -1,6 +1,4 @@
 const cluster     = require ('node:cluster')
-const process     = require ('node:process')
-
 const conf        = require ('./lib/Conf')
 const logger      = require ('./lib/Logger.js') (conf)
 const app         = new (require ('./lib/Application.js')) (conf, logger)
@@ -21,8 +19,6 @@ function exit () {
 }
 
 async function startWorkers () {
-
-    cluster.on ('message', (w, o) => {if ('level' in o) logger.log (o)})
 
     return new Promise (ok => {
 
